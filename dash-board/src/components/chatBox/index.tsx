@@ -2,7 +2,7 @@ import React from 'react';
 import './style.scss';
 import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
-import { types } from 'util';
+
 type ChatProps = {
   color: string;
   icon: string;
