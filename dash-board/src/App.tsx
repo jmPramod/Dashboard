@@ -6,10 +6,12 @@ import Products from './pages/Products';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import Menu from './components/Menu';
+import Login from './pages/Login';
+import '../src/styles/global.scss';
 function App() {
   const Layout = () => {
     return (
-      <div>
+      <div className="main">
         <NavBar />
         <div className="container">
           <div className="menuContainer">
@@ -33,6 +35,10 @@ function App() {
         { path: '/users', element: <Users /> },
         { path: '/products', element: <Products /> },
       ],
+    },
+    {
+      path: '/login',
+      element: <Login />,
     },
   ]);
   return <RouterProvider router={router} />;
