@@ -3,6 +3,7 @@
   .item {
     display: flex;
     flex-direction: column;
+    text-transform: capitalize;
 
     .title {
       font-size: 12px;

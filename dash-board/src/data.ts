@@ -6,24 +6,24 @@ export const menu = [
     id: 1,
     title: 'main',
     listItem: [
+      // {
+      //   id: 1,
+      //   title: 'main',
+      //   listItem: [
       {
         id: 1,
-        title: 'main',
-        listItem: [
-          {
-            id: 1,
-            title: 'Home Page',
-            url: '/',
-            icons: HomeIcon,
-          },
-          {
-            id: 2,
-            title: 'Profile',
-            url: '/user/1',
-            icons: PermIdentityIcon,
-          },
-        ],
+        title: 'Home Page',
+        url: '/',
+        icons: HomeIcon,
       },
+      {
+        id: 2,
+        title: 'Profile',
+        url: '/user/1',
+        icons: PermIdentityIcon,
+      },
+      // ],
+      // },
     ],
   },
   {
@@ -160,3 +160,40 @@ export const TopUsers = [
     amount: '90',
   },
 ];
+export const chatBoxData = {
+  color: '#8884d8',
+  icon: '',
+  title: 'Total Users',
+  number: '1122',
+  dataKey: 'users',
+  percentage: 45,
+  chatData: [
+    { name: 'sun', users: 400 },
+
+    { name: 'Mon', users: 500 },
+
+    { name: 'Tue', users: 100 },
+
+    { name: 'Wed', users: 900 },
+
+    { name: 'Thur', users: 200 },
+
+    { name: 'Fri', users: 500 },
+
+    { name: 'sat', users: 800 },
+  ],
+};
+export const barChatBoxRevenue = {
+  title: 'Total visit',
+  color: ' #ff8042',
+  dataKey: 'visit',
+  chartData: [
+    { name: 'sun', visit: 4000 },
+    { name: 'mon', visit: 1000 },
+    { name: 'tue', visit: 3000 },
+    { name: 'wed', visit: 4000 },
+    { name: 'thur', visit: 7000 },
+    { name: 'fri', visit: 2000 },
+    { name: 'sat', visit: 9000 },
+  ],
+};
