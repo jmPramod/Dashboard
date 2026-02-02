@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Settings,
@@ -23,36 +23,67 @@ import {
 } from "@/components/ui/drawer";
 import { useTheme } from "next-themes";
 
+type ColorType = "red" | "blue" | "green" | "yellow" | "custom";
+
 export default function Home() {
+  const [color, setColor] = useState<ColorType>("blue");
+  const [customColor, setCustomColor] = useState("#6366f1");
+
+  const colorInputRef = useRef<HTMLInputElement>(null);
+
   const [direction, setDirection] = useState<
     "top" | "right" | "bottom" | "left"
   >("right");
 
   const { setTheme, theme, resolvedTheme } = useTheme();
 
-  // Theme helpers
   const isLight = resolvedTheme === "light";
   const isDark = resolvedTheme === "dark";
   const isSystem = theme === "system";
 
-  // Icon styles
   const baseIcon =
-    "cursor-pointer flex items-center justify-center rounded-md p-2 w-10 h-10 transition-all active:scale-95";
+    "cursor-pointer flex items-center justify-center rounded-md p-2 w-full h-10 transition-all active:scale-95";
 
   const activeIcon =
-    "bg-blue-500/15 border border-blue-500 text-blue-600 dark:text-blue-400";
+    "bg-blue-500/15 border border-blue-500 text-blue-600 dark:text-blue-400  w-full";
 
-  const inactiveIcon =
-    "border border-transparent hover:bg-muted";
+  const inactiveIcon = "border border-transparent hover:bg-muted w-full";
 
-  // Reset handler
   const handleReset = () => {
     setTheme("system");
+    setColor("blue");
+  };
+
+  const colorMap = {
+    red: {
+      text: "text-red-500",
+      bg: "bg-red-200",
+      border: "border-red-400",
+      swatch: "bg-red-500",
+    },
+    blue: {
+      text: "text-blue-500",
+      bg: "bg-blue-200",
+      border: "border-blue-400",
+      swatch: "bg-blue-500",
+    },
+    green: {
+      text: "text-green-500",
+      bg: "bg-green-200",
+      border: "border-green-400",
+      swatch: "bg-green-500",
+    },
+    yellow: {
+      text: "text-yellow-500",
+      bg: "bg-yellow-200",
+      border: "border-yellow-400",
+      swatch: "bg-yellow-500",
+    },
   };
 
   return (
     <div className="relative w-full h-screen p-6">
-      {/* Direction selector (demo) */}
+      {/* Direction selector */}
       <div className="flex gap-2 mb-6">
         {(["top", "right", "bottom", "left"] as const).map((dir) => (
           <Button
@@ -74,117 +105,129 @@ export default function Home() {
         </DrawerTrigger>
 
         <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle className="flex items-center justify-between">
-              Theme Customizations
+          <DrawerHeader className="relative">
+            <DrawerTitle className="flex items-center justify-between border-b w-full p-4 fixed top-0 bg-background z-10">
+              <span>
+                <div className="text-md text-muted-foreground">
+                  Theme Customizations
+                </div>
+                <div className="text-sm font-light">
+                  Customize and preview in real time
+                </div>
+              </span>
 
               <span className="flex gap-2">
-                {/* Reset */}
                 <RefreshCcw
-                  size={18}
+                  size={22}
                   onClick={handleReset}
-                    className="cursor-pointer opacity-70 hover:opacity-100 active:rotate-180 transition"
+                  className="cursor-pointer opacity-70 hover:opacity-100 transition"
                 />
-
-                {/* Close */}
                 <DrawerClose asChild>
-                  <X
-                    size={18}
-                     
-                    className="cursor-pointer opacity-70 hover:opacity-100"
-                  />
+                  <X size={22} className="cursor-pointer opacity-70" />
                 </DrawerClose>
               </span>
             </DrawerTitle>
 
-            {/* IMPORTANT: asChild prevents nested <p> */}
             <DrawerDescription asChild>
-              <div className="space-y-6 text-sm text-muted-foreground">
-                {/* Primary color */}
+              <div className="space-y-6 p-4 pt-24">
+                {/* Preview */}
+                <div
+                  className={`border-2 inline-block rounded-md p-1 text-sm ${
+                    color !== "custom"
+                      ? `${colorMap[color].text} ${colorMap[color].bg} ${colorMap[color].border}`
+                      : ""
+                  }`}
+                  style={
+                    color === "custom"
+                      ? {
+                          color: customColor,
+                          backgroundColor: `${customColor}33`,
+                          borderColor: customColor,
+                        }
+                      : {}
+                  }
+                >
+                  Theming Preview
+                </div>
+
+                {/* Colors */}
                 <div>
-                  <div className="font-bold mb-2 text-foreground">
-                    Primary Color
-                  </div>
-                  <div className="flex gap-3">
-                    {[
-                      "bg-red-500",
-                      "bg-blue-500",
-                      "bg-green-500",
-                      "bg-yellow-500",
-                      "bg-purple-500",
-                    ].map((color) => (
+                  <div className="font-bold mb-2">Primary Color</div>
+                  <div className="flex gap-3 items-center">
+                    {(["red", "blue", "green", "yellow"] as const).map((c) => (
                       <div
-                        key={color}
-                        className="border rounded-md p-1 hover:ring-2 ring-blue-500/30 cursor-pointer"
+                        key={c}
+                        onClick={() => setColor(c)}
+                        className="border w-[15%] rounded-md p-1 cursor-pointer hover:ring-2 ring-blue-500/30"
                       >
                         <div
-                          className={`w-6 h-6 rounded ${color}`}
+                          className={`w-full h-8 rounded ${colorMap[c].swatch}`}
                         />
                       </div>
                     ))}
 
-                    <div className="border rounded-md p-2 hover:bg-muted cursor-pointer">
-                      <Pencil size={16} />
+                    {/* ✏️ Custom color */}
+                    <div
+                      onClick={() => colorInputRef.current?.click()}
+                      className={`border rounded-md p-2 cursor-pointer ${
+                        color === "custom"
+                          ? "ring-2 ring-blue-500"
+                          : "hover:bg-muted"
+                      }`}
+                    >
+                      <Pencil  size={22} color={colorInputRef.current?.value}  />
                     </div>
+
+                    {/* REAL color input */}
+                    <input
+                      ref={colorInputRef}
+                      type="color"
+                      value={customColor}
+                      onChange={(e) => {
+                        setCustomColor(e.target.value);
+                        setColor("custom");
+                      }}
+                      className="absolute opacity-0 pointer-events-none"
+                    />
                   </div>
                 </div>
 
                 {/* Theme */}
                 <div>
-                  <div className="font-bold mb-2 text-foreground">
-                    Theme
-                  </div>
-
+                  <div className="font-bold mb-2">Theme</div>
                   <div className="flex gap-3">
+                    <div className="w-full">
+
                     <Sun
-                      size={20}
                       onClick={() => setTheme("light")}
-                      className={`${baseIcon} ${
+                      className={` border ${baseIcon} ${
                         isLight ? activeIcon : inactiveIcon
                       }`}
                     />
+                    <div>Light</div>
+                    </div>
+                  <div className="w-full">
+
 
                     <Moon
-                      size={20}
                       onClick={() => setTheme("dark")}
-                      className={`${baseIcon} ${
+                      className={`border-2 ${baseIcon} ${
                         isDark ? activeIcon : inactiveIcon
                       }`}
                     />
+                       <div>Dark</div>
+                    </div>
+                 <div className="w-full">
 
                     <Laptop
-                      size={20}
                       onClick={() => setTheme("system")}
-                      className={`${baseIcon} ${
+                      className={`border-2 ${baseIcon} ${
                         isSystem ? activeIcon : inactiveIcon
                       }`}
                     />
+                       <div>System</div>
+                    </div>
                   </div>
-                </div>
-
-                {/* Extras */}
-                <div>
-                  <div className="font-bold text-foreground">
-                    Skins
-                  </div>
-                  <div className="flex"> 
-<div>
-
-                    <svg data-v-fcf8e19b="" xmlns="http://www.w3.org/2000/svg" width="104" height="66" fill="none" className="custom-radio-image"><rect width="104" height="66" fill="currentColor" fill-opacity=".02" rx="4"></rect><rect width="64.755" height="8.8" x="19.421" y="4.672" fill="currentColor" fill-opacity=".08" rx="2"></rect><rect width="3.925" height="4.4" x="22.345" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="3.925" height="4.4" x="65.515" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="3.925" height="4.4" x="71.401" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="3.925" height="4.4" x="77.288" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="40.226" height="17.6" x="44.352" y="19.613" fill="currentColor" fill-opacity=".08" rx="2"></rect><rect width="19.046" height="17.6" x="19.421" y="19.613" fill="currentColor" fill-opacity=".08" rx="2"></rect><rect width="65.159" height="17.6" x="19.421" y="42.455" fill="currentColor" fill-opacity=".08" rx="2"></rect></svg>
-  <label htmlFor="">Default</label>
-</div>
-  <div>
-                  <svg data-v-fcf8e19b="" xmlns="http://www.w3.org/2000/svg" width="104" height="66" fill="none" className="custom-radio-image"><rect width="104" height="66" fill="currentColor" fill-opacity=".02" rx="4"></rect><rect width="17.66" height="2.789" x="4.906" y="23.884" fill="currentColor" fill-opacity=".3" rx="1.395"></rect><rect width="9.811" height="9.706" x="8.83" y="5.881" fill="currentColor" fill-opacity=".3" rx="2"></rect><rect width="17.66" height="2.789" x="4.906" y="34.438" fill="currentColor" fill-opacity=".3" rx="1.395"></rect><rect width="17.66" height="2.789" x="4.906" y="44.992" fill="currentColor" fill-opacity=".3" rx="1.395"></rect><rect width="17.66" height="2.789" x="4.906" y="55.546" fill="currentColor" fill-opacity=".3" rx="1.395"></rect><rect width="63.755" height="7.8" x="34.615" y="5.172" stroke="currentColor" strokeOpacity=".12" rx="1.5"></rect><rect width="3.925" height="4.4" x="37.039" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="3.925" height="4.4" x="80.21" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="3.925" height="4.4" x="86.096" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="3.925" height="4.4" x="91.002" y="6.872" fill="currentColor" fill-opacity=".3" rx="1"></rect><rect width="39.226" height="16.6" x="58.984" y="20.113" stroke="currentColor" strokeOpacity=".12" rx="1.5"></rect><rect width="18.046" height="16.6" x="34.615" y="20.113" stroke="currentColor" strokeOpacity=".12" rx="1.5"></rect><rect width="63.755" height="16.6" x="34.615" y="42.955" stroke="currentColor" strokeOpacity=".12" rx="1.5"></rect></svg>
-<label htmlFor="">Bordered </label>
-  </div>
-                   </div>
-                </div>
-
-                <div>
-                  <div className="font-bold text-foreground">
-                    Layouts
-                  </div>
-                  <div>3 images</div>
                 </div>
               </div>
             </DrawerDescription>
